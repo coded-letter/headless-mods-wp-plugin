@@ -24,6 +24,16 @@ class Headless_Dependency_Manager
         // Disable auto-updates for locked deps
         add_filter('auto_update_plugin', [$this, 'filter_plugin_updates'], 10, 2);
         add_filter('auto_update_theme', [$this, 'filter_theme_updates'], 10, 2);
+
+        // Disable WPGRAPHQL update completelty for stability
+
+        add_filter('site_transient_update_plugins', function ($value) {
+            if (isset($value) && is_object($value) && isset($value->response)) {
+                // Replace 'wp-graphql/wp-graphql.php' with the plugin’s main file path
+                unset($value->response['wp-graphql/wp-graphql.php']);
+            }
+            return $value;
+        });
     }
 
     /**
@@ -39,6 +49,8 @@ class Headless_Dependency_Manager
             [$this, 'render_admin_page']
         );
     }
+
+
 
     /**
      * Render admin page
